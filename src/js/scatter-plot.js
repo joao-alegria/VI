@@ -6,28 +6,17 @@ var margin = { top: 10, right: 100, bottom: 30, left: 30 },
 // append the svg object to the body of the page
 var svg = d3.select("#scatter-plot")
     .append("svg")
-<<<<<<< HEAD
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
     .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-=======
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
->>>>>>> ea5ad6a7b7e9ee38966ab8c35db39c1552b2a99e
 var svg1 = svg.append("g")
     .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")")
 
-<<<<<<< HEAD
 //Read the data
 d3.csv("../../dataset/tmp.csv", function(data) {
-=======
-
-// Read the data
-d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_connectedscatter.csv", function (data) {
->>>>>>> ea5ad6a7b7e9ee38966ab8c35db39c1552b2a99e
 
     // List of groups (here I have one group per column)
     var allGroup = ["valueA", "valueB", "valueC", "valueD"]
@@ -73,41 +62,10 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
         .call(d3.axisLeft(y));
 
     // Add the lines
-<<<<<<< HEAD
     //addLines(dataPresented)
 
     // Add a label at the end of each line
     //addLabels(dataPresented)
-=======
-    var line = d3.line()
-        .x(function (d) { return x(+d.time) })
-        .y(function (d) { return y(+d.value) })
-
-    let lines = svg.selectAll("myLines")
-        .data(dataReady)
-        .enter()
-        .append("path")
-        .attr("class", function (d) { return d.name })
-        .attr("d", function (d) { return line(d.values) })
-        .attr("stroke", function (d) { return myColor(d.name) })
-        .style("stroke-width", 4)
-        .style("fill", "none")
-
-    // Add a label at the end of each line
-    svg
-        .selectAll("myLabels")
-        .data(dataReady)
-        .enter()
-        .append('g')
-        .append("text")
-        .attr("class", function (d) { return d.name })
-        .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; }) // keep only the last value of each time series
-        .attr("transform", function (d) { return "translate(" + x(d.value.time) + "," + y(d.value.value) + ")"; }) // Put the text at the position of the last point
-        .attr("x", 12) // shift the text a bit more right
-        .text(function (d) { return d.name; })
-        .style("fill", function (d) { return myColor(d.name) })
-        .style("font-size", 15)
->>>>>>> ea5ad6a7b7e9ee38966ab8c35db39c1552b2a99e
 
     // create a tooltip
     var Tooltip = d3.select("#scatter-plot")
@@ -134,10 +92,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
             //.style("top", (d3.mouse(this)[1]) + "px")
             .style("left", (cursorX + 20) + "px")
             .style("top", (cursorY) + "px")
-<<<<<<< HEAD
-=======
-            .style("z-index", "10000")
->>>>>>> ea5ad6a7b7e9ee38966ab8c35db39c1552b2a99e
     }
     var mouseleave = function (d) {
         Tooltip
@@ -145,7 +99,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
     }
 
     // Add the points
-<<<<<<< HEAD
     //addPoints(dataPresented)
 
     // Add a legend (interactive)
@@ -266,48 +219,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
             addPoints(newData)
         }
     }
-=======
-    let points = svg
-        // First we need to enter in a group
-        .selectAll("myDots")
-        .data(dataReady)
-        .enter()
-        .append('g')
-        .style("fill", function (d) { return myColor(d.name) })
-        .attr("class", function (d) { return d.name })
-        // Second we need to enter in the 'values' part of this group
-        .selectAll("myPoints")
-        .data(function (d) { return d.values })
-        .enter()
-        .append("circle")
-        .attr("cx", function (d) { return x(d.time) })
-        .attr("cy", function (d) { return y(d.value) })
-        .attr("r", 5)
-        .attr("stroke", "white")
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave)
-
-    // Add a legend (interactive)
-    svg
-        .selectAll("myLegend")
-        .data(dataReady)
-        .enter()
-        .append('g')
-        .append("text")
-        .attr('x', function (d, i) { return 30 + i * 60 })
-        .attr('y', 30)
-        .text(function (d) { return d.name; })
-        .style("fill", function (d) { return myColor(d.name) })
-        .style("font-size", 15)
-        .on("click", function (d) {
-            // is the element currently visible ?
-            currentOpacity = d3.selectAll("." + d.name).style("opacity")
-            // Change the opacity: from 0 to 1 or from 1 to 0
-            d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0 : 1)
-        })
-
->>>>>>> ea5ad6a7b7e9ee38966ab8c35db39c1552b2a99e
 
     // Add a clipPath: everything out of this area won't be drawn.
     var clip = svg.append("defs").append("svg:clipPath")
@@ -360,11 +271,5 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
 
         lines.transition().duration(1000).attr("d", function (d) { return line(d.values) })
     }
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> ea5ad6a7b7e9ee38966ab8c35db39c1552b2a99e
 })
 

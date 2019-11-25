@@ -10,66 +10,97 @@
  * ---------------------------------------
  */
 
-// Themes begin
-am4core.useTheme(am4themes_animated);
-// Themes end
+function getCountriesData(datasetJSON,year,ageRange) {
+    retval = []; // [{id:..., value:...},{...},...]
+    
+    Object.keys(datasetJSON["SP.DYN.AMRT.P3"]).forEach(function(key) {
+        element = {};
+        element["id"] = key;
+        element["value"] = datasetJSON["SP.DYN.AMRT.P3"][key][year-1960]
+        retval.push(element);
+        return
+    })
 
-// Create map instance
-var chart = am4core.create("chartdiv", am4maps.MapChart);
+    return retval;
+}
 
-// Set map definition
-chart.geodata = am4geodata_worldLow;
+d3.json("../../dataset/reducedDataset.json", function(error, datasetJSON) {
 
-// chart.geodataSource.url = "world_countries.json";
+    if (error) {throw error;}
 
-// Pan behavior
-// chart.panBehavior = "move";
+    am4core.useTheme(am4themes_animated);
 
-// Set projection
-chart.projection.d3Projection = d3.geoEquirectangular();
+    // Create map instance
+    let chart = am4core.create("chartdiv", am4maps.MapChart);
 
-// Create map polygon series
-var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-polygonSeries.north = 100;
+    // Set map definition
+    //chart.geodata = am4geodata_worldLow;
 
-// Make map load polygon (like country names) data from GeoJSON
-polygonSeries.useGeodata = true;
+    chart.geodataSource.url = "../../dataset/world_countries.json";
 
-polygonSeries.heatRules.push({
-    property: "fill",
-    target: polygonSeries.mapPolygons.template,
-    min: am4core.color("#00ff00"),
-    max: am4core.color("#ff0000")
+    // Pan behavior
+    // chart.panBehavior = "move";
+
+    // Set projection
+    chart.projection.d3Projection = d3.geoEquirectangular();
+
+    // Create map polygon series
+    let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+    polygonSeries.north = 100;
+
+    // Make map load polygon (like country names) data from GeoJSON
+    polygonSeries.useGeodata = true;
+
+    polygonSeries.heatRules.push({
+        property: "fill",
+        target: polygonSeries.mapPolygons.template,
+        min: am4core.color("#00ff00"),
+        max: am4core.color("#ff0000")
+    });
+
+    // polygonSeries.data = [{
+    //     id: "US",
+    //     value: 1000
+    // },
+    // {
+    //     id: "RU",
+    //     value: 500
+    // },
+    // {
+    //     id: "AU",
+    //     value: 0
+    // }];
+
+    var slider = document.getElementById("chosenYear");
+    var output = document.getElementById("demo");
+    output.innerHTML = slider.value; // Display the default slider value
+
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function() {
+        output.innerHTML = this.value;
+    }
+
+    // console.log(polygonSeries.data)
+    polygonSeries.data = getCountriesData(datasetJSON,2016,"adults")
+    console.log(polygonSeries.data)
+
+    // Configure series
+    let polygonTemplate = polygonSeries.mapPolygons.template;
+    polygonTemplate.tooltipText = "{name}:{value}";
+    polygonTemplate.fill = chart.colors.getIndex(0);
+
+    polygonTemplate.events.on("hit", function (ev) {
+        console.log(ev.target.dataItem.dataContext.name);
+    });
+
+    // Create hover state and set alternative fill color
+    let hs = polygonTemplate.states.create("hover");
+    // hs.properties.stroke = am4core.color("#000000");
+    hs.properties.opacity = 0.55;
+
+    // Add grid
+    let grid = chart.series.push(new am4maps.GraticuleSeries());
+    grid.toBack();
+
 });
 
-polygonSeries.data = [{
-    id: "US",
-    value: 1000
-},
-{
-    id: "RU",
-    value: 500
-},
-{
-    id: "AU",
-    value: 0
-}];
-
-// Configure series
-var polygonTemplate = polygonSeries.mapPolygons.template;
-polygonTemplate.tooltipText = "{name}:{value}";
-polygonTemplate.fill = chart.colors.getIndex(0);
-
-polygonTemplate.events.on("hit", function (ev) {
-    console.log(ev.target.dataItem.dataContext.name);
-});
-
-// Create hover state and set alternative fill color
-var hs = polygonTemplate.states.create("hover");
-// hs.properties.stroke = am4core.color("#000000");
-hs.properties.opacity = 0.55;
-
-
-// Add grid
-var grid = chart.series.push(new am4maps.GraticuleSeries());
-grid.toBack();

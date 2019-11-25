@@ -9,6 +9,7 @@
     <meta name="description" content="Simple Application developed by: Filipe Pires [85122] and João Alegria [85048]">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/sticky-menu.css" rel="stylesheet">
+    <link href="../css/range-slider.css" rel="stylesheet">
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
@@ -65,6 +66,12 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h1>World Map containing Death Rate per Country</h1>
+                    <div class="col-lg-12 slidecontainer">
+                        <input type="range" min="1960" max="2019" value="2016" class="slider" id="chosenYear">
+                        <p>Value: <span id="demo"></span></p>
+                    </div>
+                </div>
+                <div class="col-lg-12">
                     <div id="chartdiv" style="height: 600px;"></div>
                 </div>
             </div>
@@ -108,7 +115,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
     <script src="../js/sticky-menu.js"></script>
 
-
+    <!-- World Map JavaScript -->
     <script src="https://www.amcharts.com/lib/4/core.js"></script>
     <script src="https://www.amcharts.com/lib/4/maps.js"></script>
     <script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
@@ -117,13 +124,16 @@
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
 
-    <script src="../js/mapConstruction.js"></script>
     <!-- D3 -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
     <!-- Our JS Scripts -->
+    <script src="../js/mapConstruction.js"></script>
     <script src="../js/scatter-plot.js"></script>
+
+    <!-- JSON Dataset -->
+    <!-- <script type="text/javascript" src="../../dataset/reducedDataset.json"></script> -->
 
 </body>
 
