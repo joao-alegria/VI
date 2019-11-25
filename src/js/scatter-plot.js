@@ -11,12 +11,16 @@ var svg = d3.select("#scatter-plot")
     .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
+var svg1 = svg.append("g")
+    .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")")
 
 //Read the data
-d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_connectedscatter.csv", function(data) {
+d3.csv("../../dataset/tmp.csv", function(data) {
 
     // List of groups (here I have one group per column)
-    var allGroup = ["valueA", "valueB", "valueC"]
+    var allGroup = ["valueA", "valueB", "valueC", "valueD"]
+    var presentedGroup = []
 
     // Reformat the data: we need an array of arrays of {x, y} tuples
     var dataReady = allGroup.map( function(grpName) { // .map allows to do something for each element of the list
@@ -27,7 +31,15 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
             })
         };
     });
-    // console.log(dataReady)
+    var dataPresented = presentedGroup.map( function(grpName) { // .map allows to do something for each element of the list
+        return {
+            name: grpName,
+            values: data.map(function(d) {
+                return {time: d.time, value: +d[grpName]};
+            })
+        };
+    });
+    //console.log(dataReady)
 
     // A color scale: one color for each group
     var myColor = d3.scaleOrdinal()
@@ -50,33 +62,10 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
         .call(d3.axisLeft(y));        
 
     // Add the lines
-    var line = d3.line()
-        .x(function(d) { return x(+d.time) })
-        .y(function(d) { return y(+d.value) })
-    svg.selectAll("myLines")
-        .data(dataReady)
-        .enter()
-        .append("path")
-            .attr("class", function(d){ return d.name })
-            .attr("d", function(d){ return line(d.values) } )
-            .attr("stroke", function(d){ return myColor(d.name) })
-            .style("stroke-width", 4)
-            .style("fill", "none")
+    //addLines(dataPresented)
 
     // Add a label at the end of each line
-    svg
-        .selectAll("myLabels")
-        .data(dataReady)
-        .enter()
-            .append('g')
-            .append("text")
-            .attr("class", function(d){ return d.name })
-            .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; }) // keep only the last value of each time series
-            .attr("transform", function(d) { return "translate(" + x(d.value.time) + "," + y(d.value.value) + ")"; }) // Put the text at the position of the last point
-            .attr("x", 12) // shift the text a bit more right
-            .text(function(d) { return d.name; })
-            .style("fill", function(d){ return myColor(d.name) })
-            .style("font-size", 15)
+    //addLabels(dataPresented)
 
     // create a tooltip
     var Tooltip = d3.select("#scatter-plot")
@@ -106,7 +95,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
             //.style("top", (d3.mouse(this)[1]) + "px")
             .style("left", (cursorX+20) + "px")
             .style("top", (cursorY) + "px")
-            .style("z-index","10000")
     }
     var mouseleave = function(d) {
         Tooltip
@@ -114,44 +102,176 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
     }
 
     // Add the points
-    svg
-        // First we need to enter in a group
-        .selectAll("myDots")
-        .data(dataReady)
-        .enter()
-            .append('g')
-            .style("fill", function(d){ return myColor(d.name) })
-            .attr("class", function(d){ return d.name })
-        // Second we need to enter in the 'values' part of this group
-        .selectAll("myPoints")
-        .data(function(d){ return d.values })
-        .enter()
-        .append("circle")
-            .attr("cx", function(d) { return x(d.time) } )
-            .attr("cy", function(d) { return y(d.value) } )
-            .attr("r", 5)
-            .attr("stroke", "white")
-            .on("mouseover", mouseover)
-            .on("mousemove", mousemove)
-            .on("mouseleave", mouseleave)
+    //addPoints(dataPresented)
 
     // Add a legend (interactive)
-    svg
-        .selectAll("myLegend")
-        .data(dataReady)
-        .enter()
-            .append('g')
-            .append("text")
-            .attr('x', function(d,i){ return 30 + i*60})
-            .attr('y', 30)
-            .text(function(d) { return d.name; })
-            .style("fill", function(d){ return myColor(d.name) })
-            .style("font-size", 15)
-            .on("click", function(d){
-            // is the element currently visible ?
-            currentOpacity = d3.selectAll("." + d.name).style("opacity")
-            // Change the opacity: from 0 to 1 or from 1 to 0
-            d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0:1)
-            })
+    addLegend(dataReady)
+
+    function addLines(newData) {
+        var line = d3.line()
+            .x(function(d) { return x(+d.time) })
+            .y(function(d) { return y(+d.value) })
+        svg.selectAll("myLines")
+            .data(newData)
+            .enter()
+            .append("path")
+                .attr("class", function(d){ return d.name })
+                .attr("d", function(d){ return line(d.values) } )
+                .attr("stroke", function(d){ return myColor(d.name) })
+                .style("stroke-width", 4)
+                .style("fill", "none")
+    }
  
+    function addLabels(newData) {
+        svg.selectAll("myLabels")
+            .data(newData)
+            .enter()
+                .append('g')
+                .append("text")
+                .attr("class", function(d){ return d.name })
+                .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; }) // keep only the last value of each time series
+                .attr("transform", function(d) { return "translate(" + x(d.value.time) + "," + y(d.value.value) + ")"; }) // Put the text at the position of the last point
+                .attr("x", 12) // shift the text a bit more right
+                .text(function(d) { return d.name; })
+                .style("fill", function(d){ return myColor(d.name) })
+                .style("font-size", 15)
+    }
+
+    function addPoints(newData) {
+        svg.selectAll("myDots")
+            // First we need to enter in a group
+            .data(newData)
+            .enter()
+                .append('g')
+                .style("fill", function(d){ return myColor(d.name) })
+                .attr("class", function(d){ return d.name })
+            // Second we need to enter in the 'values' part of this group
+            .selectAll("myPoints")
+            .data(function(d){ return d.values })
+            .enter()
+            .append("circle")
+                .attr("cx", function(d) { return x(d.time) } )
+                .attr("cy", function(d) { return y(d.value) } )
+                .attr("r", 5)
+                .attr("stroke", "white")
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)
+                .on("mouseleave", mouseleave)
+    }
+
+    function addLegend(data) {
+        svg.selectAll("myLegend")
+            .data(dataReady)
+            .enter()
+                .append('g')
+                .append("text")
+                .attr('x', function(d,i){ return 30 + i*60})
+                .attr('y', 30)
+                .text(function(d) { return d.name; })
+                .style("fill", function(d){ return myColor(d.name) })
+                .style("font-size", 15)
+                .on("click", function(d){
+                    updateScatterPlot(d)
+                    /*
+                    // is the element currently visible ?
+                    currentOpacity = d3.selectAll("." + d.name).style("opacity")
+                    // Change the opacity: from 0 to 1 or from 1 to 0
+                    d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0:1)
+                    */
+                })
+    }
+
+    function updateScatterPlot(d) {
+        if(presentedGroup.includes(d.name)) {
+            presentedGroup.splice(presentedGroup.indexOf(d.name));
+            dataPresented = presentedGroup.map( function(grpName) { // .map allows to do something for each element of the list
+                return {
+                    name: grpName,
+                    values: data.map(function(d) {
+                        return {time: d.time, value: +d[grpName]};
+                    })
+                };
+            });
+            d3.select("svg").selectAll("circle").remove();
+            console.log(d3.select("svg").selectAll("path")["_groups"]) ////////////////////// CONTINUE HERE
+            //d3.select("svg").selectAll("path").remove();
+            //d3.select("svg").selectAll("text").remove();
+            addLines(dataPresented)
+            addLabels(dataPresented)
+            addPoints(dataPresented)
+        } else {
+            presentedGroup.push(d.name)
+            dataPresented = presentedGroup.map( function(grpName) { // .map allows to do something for each element of the list
+                return {
+                    name: grpName,
+                    values: data.map(function(d) {
+                        return {time: d.time, value: +d[grpName]};
+                    })
+                };
+            });
+            newData = [d.name].map( function(grpName) { // .map allows to do something for each element of the list
+                return {
+                    name: grpName,
+                    values: data.map(function(d) {
+                        return {time: d.time, value: +d[grpName]};
+                    })
+                };
+            });
+            addLines(newData)
+            addLabels(newData)
+            addPoints(newData)
+        }
+    }
+
+    // Add a clipPath: everything out of this area won't be drawn.
+    var clip = svg.append("defs").append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("x", 0)
+        .attr("y", 0);
+
+
+    // Add brushing
+    var brush = d3.brushX()                   // Add the brush feature using the d3.brush function
+        .extent([[0, 0], [width, height]])  // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+        .on("end", updateChart)               // Each time the brush selection changes, trigger the 'updateChart' function
+
+
+    // Add the brushing
+    svg1
+        .append("g")
+        .attr("class", "brush")
+        .call(brush);
+
+    // A function that set idleTimeOut to null
+    var idleTimeout
+    function idled() { idleTimeout = null; }
+
+    // A function that update the chart for given boundaries
+    function updateChart() {
+
+        // What are the selected boundaries?
+        extent = d3.event.selection
+
+        // If no selection, back to initial coordinate. Otherwise, update X axis domain
+        if (!extent) {
+            if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+            x.domain([4, 8])
+        } else {
+            x.domain([x.invert(extent[0]), x.invert(extent[1])])
+            svg.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+        }
+
+        // Update axis and line position
+        xAxis.transition().duration(1000).call(d3.axisBottom(x))
+        points
+            .transition()
+            .duration(1000)
+            .attr("cx", function (d) { return x(d.time) })
+            .attr("cy", function (d) { return y(d.value) })
+
+        lines.transition().duration(1000).attr("d", function (d) { return line(d.values) })
+    }
 })
