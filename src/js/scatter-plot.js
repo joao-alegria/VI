@@ -18,7 +18,7 @@ let PRESENTED_GROUP = []
 let IDLE_TIMEOUT
 
 
-
+//map functions
 function getCountriesData(datasetJSON, indicator, year) {
     let retval = []; // [{id:..., value:...},{...},...]
 
@@ -32,6 +32,29 @@ function getCountriesData(datasetJSON, indicator, year) {
 
     return retval;
 }
+
+
+function getMaxMinValueByIndicator(data, indicator) {
+    let max = 0.0;
+    let min = Number.MAX_VALUE;
+    Object.keys(data[indicator]).forEach(function (year) {
+        Object.keys(data[indicator][year]).forEach(function (country) {
+            if (data[indicator][year][country]["value"] != null) {
+                if (data[indicator][year][country]["value"] > max) {
+                    max = data[indicator][year][country]["value"];
+                }
+                if (data[indicator][year][country]["value"] < min) {
+                    min = data[indicator][year][country]["value"];
+                }
+            }
+        })
+    })
+    return [max, min];
+}
+
+
+
+//scatterplot functions
 
 function idled() { IDLE_TIMEOUT = null; }
 
@@ -209,6 +232,26 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
 
     //MAP RELATED
 
+    // Add fictitious countries to insert max and min values of current indicator 
+    // (this is done for the color scaling to be correct throughout the years)
+    Object.keys(data).forEach(function (indicator) {
+        tmp = getMaxMinValueByIndicator(data, indicator)
+
+        max = {};
+        max["id"] = "max";
+        max["value"] = tmp[0];
+
+        min = {};
+        min["id"] = "min";
+        min["value"] = tmp[1];
+
+        for (let y = 1960; y < 2020; y++) {
+            data[indicator][y].push(max);
+            data[indicator][y].push(min);
+        }
+    })
+
+    // Define aux variables with indicator codes
     neonatalCode = "SH.DYN.NMRT";
     under5Code = "SH.DYN.MORT";
     infantCode = "SP.DYN.IMRT.IN";
@@ -255,8 +298,8 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     polygonSeries.heatRules.push({
         property: "fill",
         target: polygonSeries.mapPolygons.template,
-        min: am4core.color("#00ff00"),
-        max: am4core.color("#ff0000")
+        min: am4core.color("#FDF7DB"),//am4core.color("#00ff00"),
+        max: am4core.color("#712807")//am4core.color("#ff0000")
     });
 
     // Add grid
@@ -286,6 +329,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
         polygonSeries.data = data[btnSelected][slider.value];
         currentYear.innerHTML = slider.value;
     }
+    console.log(data[btnSelected][slider.value])
     polygonSeries.data = data[btnSelected][slider.value];
     // polygonSeries.data = [{id:"US", value:1000}, {id:"RU", value:500}, {id:"AU", value:0}];
 
@@ -338,7 +382,6 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     let hs = polygonTemplate.states.create("hover");
     hs.properties.opacity = 0.55;
     // hs.properties.stroke = am4core.color("#000000");
-
 
 
 
