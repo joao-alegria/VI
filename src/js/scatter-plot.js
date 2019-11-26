@@ -21,21 +21,6 @@ function addLines(svg, x, y, myColor, newData) {
         .style("fill", "none")
 }
 
-function addLabels(svg, x, y, myColor, newData) {
-    svg.selectAll("myLabels")
-        .data(newData)
-        .enter()
-        .append('g')
-        .append("text")
-        .attr("class", function (d) { return d.name })
-        .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; }) // keep only the last value of each time series
-        .attr("transform", function (d) { return "translate(" + x(d.value.time) + "," + y(d.value.value) + ")"; }) // Put the text at the position of the last point
-        .attr("x", 12) // shift the text a bit more right
-        .text(function (d) { return d.name; })
-        .style("fill", function (d) { return myColor(d.name) })
-        .style("font-size", 15)
-}
-
 function addPoints(svg, x, y, myColor, newData) {
     // create a tooltip
     let Tooltip = d3.select("#scatter-plot")
@@ -55,13 +40,13 @@ function addPoints(svg, x, y, myColor, newData) {
             .style("opacity", 1)
     }
     let mousemove = function (d) {
-        let cursorX = event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-        let cursorY = event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+        let cursorX = d3.mouse(this)[0]
+        let cursorY = d3.mouse(this)[1]
         Tooltip
-            .html("Exact value: " + d.value)
+            .html(d.class + ": " + d.value)
             //.style("left", (d3.mouse(this)[0]+70) + "px")
             //.style("top", (d3.mouse(this)[1]) + "px")
-            .style("left", (cursorX + 20) + "px")
+            .style("left", (cursorX + 70) + "px")
             .style("top", (cursorY) + "px")
     }
     let mouseleave = function (d) {
@@ -106,13 +91,14 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
         .enter()
         .append('div')
         .attr("class", "row")
-        .append("text")
+        .append("label")
         .style("cursor", "pointer")
-        .attr('x', function (d, i) { return 30 + i * 60 })
-        .attr('y', 30)
+        .style("font-size", "18px")
         .text(function (d) { return d.name; })
-        .style("fill", function (d) { return myColor(d.name) })
-        .style("font-size", 15)
+        .append("input")
+        .attr("type", "checkbox")
+        .attr("id", function (d) { return d.name; })
+        .style("margin-left", "4px")
         .on("click", function (d) {
             updateScatterPlot(svg, x, y, myColor, d, originalData)
             /*
@@ -156,8 +142,8 @@ function updateScatterPlot(svg, x, y, myColor, d, data) {
             };
         });
         addLines(svg, x, y, myColor, newData)
-        addLabels(svg, x, y, myColor, newData)
         addPoints(svg, x, y, myColor, newData)
+        d3.select("#" + d.name).property("checked", "true")
     }
 }
 
@@ -172,6 +158,7 @@ let margin_left = 20;
 // append the svg object to the body of the page
 let svg = d3.select("#scatter-plot")
     .append("svg")
+    .attr("id", "mySVG")
     .attr("width", width + 100)
     .attr("height", height + 50)
     .append("g")
@@ -218,6 +205,13 @@ d3.csv("../../dataset/tmp.csv", function (data) {
 
     // Add a legend (interactive)
     addLegend(svg, x, y, myColor, updateScatterPlot, data, dataReady)
+
+    let valueATmp = []
+    for (let idx in data) {
+        valueATmp.push({ time: data[idx].time, value: data[idx].value })
+    }
+
+    updateScatterPlot(svg, x, y, myColor, { name: "valueA", values: valueATmp }, data)
 
 
     // Add brushing

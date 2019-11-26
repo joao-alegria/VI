@@ -10,13 +10,13 @@
  * ---------------------------------------
  */
 
-function getCountriesData(datasetJSON,year,ageRange) {
+function getCountriesData(datasetJSON, year, ageRange) {
     retval = []; // [{id:..., value:...},{...},...]
-    
-    Object.keys(datasetJSON["SP.DYN.AMRT.P3"]).forEach(function(key) {
+
+    Object.keys(datasetJSON["SP.DYN.AMRT.P3"]).forEach(function (key) {
         element = {};
         element["id"] = key;
-        element["value"] = datasetJSON["SP.DYN.AMRT.P3"][key][year-1960]
+        element["value"] = datasetJSON["SP.DYN.AMRT.P3"][key][year - 1960]
         retval.push(element);
         return
     })
@@ -24,22 +24,38 @@ function getCountriesData(datasetJSON,year,ageRange) {
     return retval;
 }
 
-d3.json("../../dataset/reducedDataset.json", function(error, datasetJSON) {
+d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
 
-    if (error) {throw error;}
+    if (error) { throw error; }
 
     am4core.useTheme(am4themes_animated);
 
     // Create map instance
     let chart = am4core.create("chartdiv", am4maps.MapChart);
+    chart.zoomControl = new am4maps.ZoomControl()
+
+
+    chart.events.on("down", function (d) {
+        console.log(d)
+        if (d.target.zoomLevel < 1.1) {
+            chart.seriesContainer.draggable = false;
+        } else {
+            chart.seriesContainer.draggable = true;
+        }
+    })
+
+
 
     // Set map definition
-    //chart.geodata = am4geodata_worldLow;
+    // chart.geodata = am4geodata_worldLow;
 
     chart.geodataSource.url = "../../dataset/world_countries.json";
 
     // Pan behavior
-    // chart.panBehavior = "move";
+    chart.panBehavior = "move";
+
+    // chart.seriesContainer.draggable = false;
+    // chart.seriesContainer.resizable = false;
 
     // Set projection
     chart.projection.d3Projection = d3.geoEquirectangular();
@@ -71,18 +87,20 @@ d3.json("../../dataset/reducedDataset.json", function(error, datasetJSON) {
     //     value: 0
     // }];
 
+
+
     var slider = document.getElementById("chosenYear");
     var output = document.getElementById("demo");
     output.innerHTML = slider.value; // Display the default slider value
 
     // Update the current slider value (each time you drag the slider handle)
-    slider.oninput = function() {
+    slider.oninput = function () {
         output.innerHTML = this.value;
     }
 
     // console.log(polygonSeries.data)
-    polygonSeries.data = getCountriesData(datasetJSON,2016,"adults")
-    console.log(polygonSeries.data)
+    polygonSeries.data = getCountriesData(datasetJSON, 1960, "adults")
+    // console.log(polygonSeries.data)
 
     // Configure series
     let polygonTemplate = polygonSeries.mapPolygons.template;
