@@ -1,0 +1,27 @@
+
+.world-map {
+    height: 50em; 
+    width: 100%; 
+    margin: auto;
+}
+
+.scatter-plot {
+    height: 40em; 
+    margin: auto;
+}
+
+.mauto {
+    margin:auto;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.ml-20 {
+    margin-left: 20px;
+}
+
+.mt-60 {
+    margin-top: 60px;
+}

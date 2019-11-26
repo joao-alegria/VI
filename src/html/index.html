@@ -8,6 +8,7 @@
     <title>VI - World Development Analysis Application</title>
     <meta name="description" content="Simple Application developed by: Filipe Pires [85122] and João Alegria [85048]">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/utilities.css" rel="stylesheet">
     <link href="../css/sticky-menu.css" rel="stylesheet">
     <link href="../css/range-slider.css" rel="stylesheet">
 </head>
@@ -64,14 +65,25 @@
     <section id="worldmap" class="worldmap-section">
         <div class="container">
             <div class="row">
+                <!-- Title -->
                 <div class="col-lg-12">
                     <h1>World Map containing Death Rate per Country</h1>
-                    <div class="col-lg-12 slidecontainer">
-                        <input type="range" min="1960" max="2019" value="2016" class="slider" id="chosenYear">
+                </div>
+                <!-- Filters -->
+                <div class="col-lg-12"></div>
+                    <div class="slidecontainer">
+                        <input type="range" min="1960" max="2019" value="2016" class="slider mb-20" id="chosenYear">
+                        <h4>Year: <span id="currentYear"></span></h4>
+                        <button type="button" class="btn btn-primary btn-lg" id="btn-neonatal">Neonatal</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btn-under5">Under-5</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btn-infant">Infant</button>
+                        <button type="button" class="btn btn-primary btn-lg active" id="btn-adult">Adult</button>
+                        <p> </p>
                     </div>
                 </div>
+                <!-- Map -->
                 <div class="col-lg-12">
-                    <div id="chartdiv" style="height: 800px; width:80%; margin:auto"></div>
+                    <div class="world-map" id="world-map"></div>
                 </div>
             </div>
         </div>
@@ -80,28 +92,37 @@
 
     <!-- Development Indicators -->
     <section id="developmentindicators" class="developmentindicators-section">
-        <div class="row">
-            <h1 style="margin-bottom:20px">Explore the World Development Indicators Here</h1>
-            <div class="col-lg-2">
-                <div class="row">
-                    <h2 style="margin:auto">Indicators/Years:</h2>
+        <div class="container">
+            <div class="row">
+                <!-- Title -->
+                <div class="col-lg-12">
+                    <h1 class="mb-20 mt-60">Explore the World Development Indicators Here</h1>
                 </div>
-                <div class="row">
-                    <div class="col-lg-6" id="indicators"></div>
-                    <div class="col-lg-6" id=years></div>
+                <!-- Filters -->
+                <div class="col-lg-2">
+                    <div class="row">
+                        <h3 class="mauto">Indicators | Years</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6" id="indicators"></div>
+                        <div class="col-lg-6" id=years></div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-10">
-                <div id="scatter-plot" style="height: 600px;margin:auto"></div>
+                <!-- Chart -->
+                <div class="col-lg-10">
+                    <div class="scatter-plot ml-20" id="scatter-plot"></div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- About Section -->
     <section id="about" class="about-section">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1>About This Project</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="mt-60">About This Project</h1>
+                </div>
             </div>
         </div>
     </section>
