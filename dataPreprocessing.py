@@ -26,7 +26,6 @@ reducedDataset["SP.DYN.IMRT.IN"] = {}
 reducedDataset["SP.DYN.AMRT.P3"] = {} #reducedDataset["SP.DYN.AMRT.FE"] = {} #reducedDataset["SSP.DYN.AMRT.MA"] = {}
 reducedDataset["SH.STA.WASH.P5"] = {}
 reducedDataset["SH.MED.NUMW.P3"] = {}
-reducedDataset["SP.POP.TOTL"] = {}
 reducedDataset["SH.STA.SUIC.P5"] = {}
 
 csvfile = open('dataset/WDIData.csv', newline="")
@@ -73,17 +72,7 @@ for row in datasetReader:
         reducedDataset["SH.STA.WASH.P5"][row["Country Code"]] = data
         continue
 
-    # 13. Population, total
-    if row["Indicator Code"] == "SP.POP.TOTL":
-        for i in range(1960,2020):
-            if row[str(i)]=="":
-                data.append(None)
-            else:
-                data.append(int(row[str(i)]))
-        reducedDataset["SP.POP.TOTL"][row["Country Code"]] = data
-        continue
-
-    # 14. Suicide mortality rate (per 100,000 population)
+    # 13. Suicide mortality rate (per 100,000 population)
     if row["Indicator Code"] == "SH.STA.SUIC.P5":
         for i in range(1960,2020):
             if row[str(i)]=="":

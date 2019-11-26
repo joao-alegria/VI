@@ -52,6 +52,20 @@ function getMaxMinValueByIndicator(data, indicator) {
     return [max, min];
 }
 
+function getMaxValue(data) {
+    let max = 0.0;
+    Object.keys(data).forEach(function (indicator) {
+        tmp = getMaxMinValueByIndicator(data, indicator);
+        console.log(indicator)
+        console.log(tmp)
+        if (tmp[0] > max) {
+            max = tmp[0]
+        }
+    })
+    console.log(max);
+    return max;
+}
+
 
 
 //scatterplot functions
@@ -192,7 +206,7 @@ function updateScatterPlot(svg, x, y, myColor, d, data) {
             for (let countryIdx in data[d.name][year]) {
                 if (countryArr.indexOf(data[d.name][year][countryIdx].id) != -1) {
                     console.log(data[d.name][year][countryIdx].id)
-                    values[countryArr.indexOf(data[d.name][year][countryIdx].id)].push({ time: parseInt(year), value: data[d.name][year][countryIdx].value })
+                    values[countryArr.indexOf(data[d.name][year][countryIdx].id)].push({ time: parseInt(year), value: (data[d.name][year][countryIdx].value == null ? 0 : Math.log(data[d.name][year][countryIdx].value)) })
                 }
 
             }
@@ -427,7 +441,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
         let values = []
         for (let year in data[grpName]) {
             for (let countryIdx in data[grpName][year]) {
-                values.push({ time: parseInt(year), value: data[grpName][year][countryIdx].value })
+                values.push({ time: parseInt(year), value: (data[grpName][year][countryIdx].value == null ? 0 : Math.log(data[grpName][year][countryIdx].value)) })
                 break
             }
         }
@@ -440,7 +454,8 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     // A color scale: one color for each group
     let myColor = d3.scaleOrdinal()
         .domain(ALL_INDICATORS.concat(ALL_COUNTRIES))
-        .range(d3.schemeSet2);
+        //.range(d3.schemeSet2);
+        .range(d3.schemeSpectral[11])
 
     // Add X axis
     let xDomain = [1960, 2019]
@@ -452,7 +467,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
         .call(d3.axisBottom(x));
 
     // Add Y axis
-    let yDomain = [0, 1000]
+    let yDomain = [0, Math.log(getMaxValue(data))]
     let y = d3.scaleLinear()
         .domain(yDomain)
         .range([height, 0]);

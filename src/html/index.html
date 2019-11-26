@@ -52,7 +52,7 @@
                         This website has the purpose of helping you analyse various world development indicators
                         throughout the years between 1960 and 2019.
                         These focus on aspects related to death rates and health issues, with additional helpful
-                        information such as the total population per country.
+                        information such as the number of nurses per 100 000 people.
                     </p>
                     <p style="font-size:20px; text-align: justify;">
                         All indicators are presented according to the same unit: they represent a given ratio per
@@ -132,7 +132,7 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="about-section">
+    <section id="about" class="about-section" style="margin-bottom: 100px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -141,6 +141,13 @@
                         Our project was developed for the course of Information Visualization with the purpose of
                         learning aspects related to data visualization and the most appropriate tools for various
                         scenarios.
+                        The development focuses on the graphical library
+                        <a href="https://d3js.org/" target="_blank" rel="nofollow">D3.js</a>
+                        and we in particular use the external library
+                        <a href="https://www.amcharts.com/" target="_blank" rel="nofollow">AMCharts</a>
+                        that integrates D3 within it to increase our control over the graphical elements.
+                        The website's implementation uses simple HTML and Bootstrap templates to make it look more
+                        visually appealing, simplistic and modern.
                     </p>
                     <p style="font-size:20px; text-align: justify;">
                         We focused on two charts to present our data: the map chart and the connected scatter-plot.
@@ -158,6 +165,24 @@
                         We found this tool more appropriate than a regular line chart as it keeps an emphasis on
                         discrete values
                         while still making visible the notion of continuity between years.
+                    </p>
+                    <p style="font-size:20px; text-align: justify;">
+                        All data entries presented on any of the visualization tools have a helpful tooltip for
+                        guidance.
+                        The map's color scheme was tested to the most common cases of sight disfunction in order for
+                        even those people (except, obviously, blind people) to be able to use the map like the others;
+                        this was done with the help of the online tool
+                        <a href="https://www.color-blindness.com/coblis-color-blindness-simulator/" target="_blank"
+                            rel="nofollow">Coblis</a>.
+                    </p>
+                    <p style="font-size:20px; text-align: justify;">
+                        The entire code is publicly available at our
+                        <a href="https://github.com/joao-alegria/VI" target="_blank" rel="nofollow">GitHub
+                            repository</a>
+                        and follows Tiago Davi's (one of our professors)
+                        <a href="https://github.com/tiagodavi70/ua_infovis/blob/c50422815f49b0a4747c6f727042b4da95dd7af2/D3/Code_Style.md"
+                            target="_blank" rel="nofollow">Code Style Guide</a>.
+
                     </p>
                 </div>
             </div>
