@@ -66,7 +66,7 @@ function addLines(svg, x, y, myColor, newData) {
         .data(newData)
         .enter()
         .append("path")
-        .attr("class", function (d) { return d.name.replace(/\./g, "_") })
+        .attr("class", function (d) { return d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_") + " " + d.name.substring(0, d.name.indexOf("/")) })
         .attr("d", function (d) { return line(d.values) })
         .attr("stroke", function (d) { return myColor(d.name) })
         .style("stroke-width", 4)
@@ -95,7 +95,7 @@ function addPoints(svg, x, y, myColor, newData) {
         let cursorX = d3.mouse(this)[0]
         let cursorY = d3.mouse(this)[1]
         Tooltip
-            .html(d.class + ": " + d.value)
+            .html(d.country + "/" + d.class + ": " + d.value)
             //.style("left", (d3.mouse(this)[0]+70) + "px")
             //.style("top", (d3.mouse(this)[1]) + "px")
             .style("left", (cursorX + 70) + "px")
@@ -119,13 +119,14 @@ function addPoints(svg, x, y, myColor, newData) {
                 return {
                     time: a.time,
                     value: a.value,
-                    class: d.name.replace(/\./g, "_")
+                    class: d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_"),
+                    country: d.name.substring(0, d.name.indexOf("/"))
                 }
             })
         })
         .enter()
         .append("circle")
-        .attr("class", function (d) { return d.class })
+        .attr("class", function (d) { return d.class + " " + d.country })
         .attr("cx", function (d) { return x(d.time) })
         .attr("cy", function (d) { return y(d.value) })
         .attr("r", 5)
@@ -136,6 +137,23 @@ function addPoints(svg, x, y, myColor, newData) {
 }
 
 function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData) {
+    d3.select("#countries").selectAll("myLegend")
+        .data(ALL_COUNTRIES)
+        .enter()
+        .append('div')
+        .attr("class", "row")
+        .append("label")
+        .style("cursor", "pointer")
+        .text(function (d) { return d })
+        .append("input")
+        .attr("type", "checkbox")
+        .attr("id", function (d) { return d })
+        .attr("class", "country")
+        .style("margin-left", "4px")
+        .on("click", function (d) {
+            svg.selectAll("." + d).remove()
+        })
+
     d3.select("#indicators").selectAll("myLegend")
         .data(newData)
         .enter()
@@ -157,22 +175,35 @@ function updateScatterPlot(svg, x, y, myColor, d, data) {
     if (PRESENTED_GROUP.includes(d.name)) {
         PRESENTED_GROUP = PRESENTED_GROUP.filter(function (value, index, arr) { return value != d.name })
         svg.selectAll("." + d.name.replace(/\./g, "_")).remove()
-
     } else {
+        let countryArr = []
+        d3.selectAll(".country").each(function (z) {
+            if (d3.select("#" + z).property("checked")) {
+                countryArr.push(z)
+            }
+        })
         PRESENTED_GROUP.push(d.name)
 
         let values = []
+        for (let z in countryArr) {
+            values.push([])
+        }
         for (let year in data[d.name]) {
             for (let countryIdx in data[d.name][year]) {
-                values.push({ time: parseInt(year), value: data[d.name][year][countryIdx].value })
-                break
+                if (countryArr.indexOf(data[d.name][year][countryIdx].id) != -1) {
+                    console.log(data[d.name][year][countryIdx].id)
+                    values[countryArr.indexOf(data[d.name][year][countryIdx].id)].push({ time: parseInt(year), value: data[d.name][year][countryIdx].value })
+                }
+
             }
+
         }
 
-        newData = [{
-            name: d.name,
-            values: values
-        }]
+        let newData = []
+        for (let idx in values) {
+            newData.push({ name: countryArr[idx] + "/" + d.name, values: values[idx] })
+        }
+
         addPoints(svg, x, y, myColor, newData)
         addLines(svg, x, y, myColor, newData)
 
@@ -218,17 +249,6 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
             data[indicator][y] = getCountriesData(datasetJSON, indicator, y);
         }
     })
-
-    for (let key in data) {
-        ALL_INDICATORS.push(key)
-    }
-
-    for (let year in data[ALL_INDICATORS[0]]) {
-        for (let countryIdx in data[ALL_INDICATORS[0]][year]) {
-            ALL_COUNTRIES.push(data[ALL_INDICATORS[0]][year][countryIdx].id)
-        }
-        break
-    }
 
     //MAP RELATED
 
@@ -375,7 +395,8 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     polygonTemplate.fill = "lightgrey" //chart.colors.getIndex(0);
 
     polygonTemplate.events.on("hit", function (ev) {
-        console.log(ev.target.dataItem.dataContext.id);
+        d3.selectAll(".country").property("checked", false)
+        d3.select("#" + ev.target.dataItem.dataContext.id).property("checked", true)
     });
 
     // Create hover state and set alternative fill color
@@ -388,6 +409,18 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
 
     //SCATTERPLOT RELATED
 
+
+
+    for (let key in data) {
+        ALL_INDICATORS.push(key)
+    }
+
+    for (let year in data[ALL_INDICATORS[0]]) {
+        for (let countryIdx in data[ALL_INDICATORS[0]][year]) {
+            ALL_COUNTRIES.push(data[ALL_INDICATORS[0]][year][countryIdx].id)
+        }
+        break
+    }
 
     // Reformat the data: we need an array of arrays of {x, y} tuples
     let dataReady = ALL_INDICATORS.map(function (grpName) { // .map allows to do something for each element of the list
