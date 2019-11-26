@@ -10,13 +10,13 @@
  * ---------------------------------------
  */
 
-function getCountriesData(datasetJSON,year,ageRange) {
+function getCountriesData(datasetJSON,indicator,year) {
     retval = []; // [{id:..., value:...},{...},...]
     
-    Object.keys(datasetJSON["SP.DYN.AMRT.P3"]).forEach(function(key) {
+    Object.keys(datasetJSON[indicator]).forEach(function(key) {
         element = {};
         element["id"] = key;
-        element["value"] = datasetJSON["SP.DYN.AMRT.P3"][key][year-1960]
+        element["value"] = datasetJSON[indicator][key][year-1960]
         retval.push(element);
         return
     })
@@ -27,6 +27,14 @@ function getCountriesData(datasetJSON,year,ageRange) {
 d3.json("../../dataset/reducedDataset.json", function(error, datasetJSON) {
 
     if (error) {throw error;}
+
+    data = {}
+    Object.keys(datasetJSON).forEach(function(indicator) {
+        data[indicator] = {};
+        for(let y=1960; y<2020; y++) {
+            data[indicator][y] = getCountriesData(datasetJSON,indicator,y);
+        }
+    })
 
     am4core.useTheme(am4themes_animated);
 
@@ -71,18 +79,18 @@ d3.json("../../dataset/reducedDataset.json", function(error, datasetJSON) {
     //     value: 0
     // }];
 
-    var slider = document.getElementById("chosenYear");
-    var output = document.getElementById("demo");
-    output.innerHTML = slider.value; // Display the default slider value
+    let slider = document.getElementById("chosenYear");
 
     // Update the current slider value (each time you drag the slider handle)
     slider.oninput = function() {
-        output.innerHTML = this.value;
+        polygonSeries.data = data["SP.DYN.AMRT.P3"][slider.value];
+        //polygonSeries.data = getCountriesData(datasetJSON,"SP.DYN.AMRT.P3",slider.value)
     }
 
     // console.log(polygonSeries.data)
-    polygonSeries.data = getCountriesData(datasetJSON,2016,"adults")
-    console.log(polygonSeries.data)
+    polygonSeries.data = data["SP.DYN.AMRT.P3"][slider.value];
+    //polygonSeries.data = getCountriesData(datasetJSON,"SP.DYN.AMRT.P3",slider.value)
+    //console.log(polygonSeries.data)
 
     // Configure series
     let polygonTemplate = polygonSeries.mapPolygons.template;
