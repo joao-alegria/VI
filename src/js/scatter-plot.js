@@ -101,12 +101,6 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
         .style("margin-left", "4px")
         .on("click", function (d) {
             updateScatterPlot(svg, x, y, myColor, d, originalData)
-            /*
-            // is the element currently visible ?
-            currentOpacity = d3.selectAll("." + d.name).style("opacity")
-            // Change the opacity: from 0 to 1 or from 1 to 0
-            d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0:1)
-            */
         })
 }
 

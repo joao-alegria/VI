@@ -42,66 +42,68 @@
         </div> <!-- .navbar-collapse -->
     </nav>
     <!-- Welcome   -->
-    <section id="welcome" class="home-section">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1>World Development Analysis Application</h1>
-                <p>...</p>
-                <p>...</p>
-                <p>... <a href="https://html5-templates.com/" target="_blank" rel="nofollow">HTML5 Templates</a>.
-                    Thank You!</p>
-                <p>&nbsp;</p>
-                <a class="btn btn-primary page-scroll" href="#worldmap">Check out our features!</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- World Map -->
-    <section id="worldmap" class="worldmap-section">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1>World Map containing Death Rate per Country</h1>
-                <div class="col-lg-12 slidecontainer">
-                    <input type="range" min="1960" max="2019" value="2016" class="slider" id="chosenYear">
-                    <p>Value: <span id="demo"></span></p>
+    <div class="container">
+        <section id="welcome" class="home-section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>World Development Analysis Application</h1>
+                    <p>...</p>
+                    <p>...</p>
+                    <p>... <a href="https://html5-templates.com/" target="_blank" rel="nofollow">HTML5 Templates</a>.
+                        Thank You!</p>
+                    <p>&nbsp;</p>
+                    <a class="btn btn-primary page-scroll" href="#worldmap">Check out our features!</a>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div id="chartdiv" style="height: 800px; width:80%; margin:auto"></div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-
-    <!-- Development Indicators -->
-    <section id="developmentindicators" class="developmentindicators-section">
-        <div class="row">
-            <h1 style="margin-bottom:20px">Explore the World Development Indicators Here</h1>
-            <div class="col-lg-2">
-                <div class="row">
-                    <h2 style="margin:auto">Indicators/Years:</h2>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6" id="indicators"></div>
-                    <div class="col-lg-6" id=years></div>
+        <!-- World Map -->
+        <section id="worldmap" class="worldmap-section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>World Map containing Death Rate per Country</h1>
+                    <div class="col-lg-12 slidecontainer">
+                        <input type="range" min="1960" max="2019" value="2016" class="slider" id="chosenYear">
+                        <p>Value: <span id="demo"></span></p>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-10">
-                <div id="scatter-plot" style="height: 600px;margin:auto"></div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="chartdiv" style="height: 60vh; width:100%"></div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- About Section -->
-    <section id="about" class="about-section">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1>About This Project</h1>
+
+        <!-- Development Indicators -->
+        <section id="developmentindicators" class="developmentindicators-section">
+            <div class="row">
+                <h1 style="margin-bottom:20px">Explore the World Development Indicators Here</h1>
+                <div class="col-lg-2">
+                    <div class="row">
+                        <h2 style="margin:auto">Indicators/Years:</h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6" id="indicators"></div>
+                        <div class="col-lg-6" id=years></div>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <div id="scatter-plot" style="height: 600px;margin:auto"></div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>About This Project</h1>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <a style="font-size: 50px; margin-right: 10px;" id="back2Top" title="Back to top" href="#">&#10148;</a>
 
