@@ -20,7 +20,6 @@ reducedDataset["SH.HIV.INCD.ZS"] = {}
 reducedDataset["SH.MLR.INCD.P3"] = {}
 reducedDataset["SH.TBS.INCD"] = {}
 reducedDataset["VC.IHR.PSRC.P5"] = {}
-reducedDataset["SH.DYN.NCOM.ZS"] = {}
 reducedDataset["SH.DYN.NMRT"] = {}
 reducedDataset["SH.DYN.MORT"] = {}
 reducedDataset["SP.DYN.IMRT.IN"] = {}
