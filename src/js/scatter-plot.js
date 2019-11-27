@@ -305,6 +305,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
 
     // Add fictitious countries to insert max and min values of current indicator 
     // (this is done for the color scaling to be correct throughout the years)
+    let MaxMin
     Object.keys(data).forEach(function (indicator) {
         tmp = getMaxMinValueByIndicator(data, indicator)
 
@@ -372,6 +373,27 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
         min: am4core.color("#FDF7DB"),//am4core.color("#00ff00"),
         max: am4core.color("#712807")//am4core.color("#ff0000")
     });
+
+    var heatLegend = chart.chartContainer.createChild(am4maps.HeatLegend);
+    heatLegend.series = polygonSeries;
+    heatLegend.valign = "top";
+    heatLegend.align = "right";
+    heatLegend.padding(0, 65, 0, 0)
+    heatLegend.height = am4core.percent(33);
+    heatLegend.orientation = "vertical";
+
+    polygonSeries.mapPolygons.template.events.on("over", event => {
+        if (!isNaN(event.target.dataItem.value)) {
+            heatLegend.valueAxis.showTooltipAt(event.target.dataItem.value, 65);
+        } else {
+            heatLegend.valueAxis.hideTooltip();
+        }
+    });
+
+    polygonSeries.mapPolygons.template.events.on("out", event => {
+        heatLegend.valueAxis.hideTooltip();
+    });
+
 
     // Add grid
     let grid = chart.series.push(new am4maps.GraticuleSeries());
