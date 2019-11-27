@@ -14,7 +14,8 @@
 //GLOBAL letIABLES
 let ALL_INDICATORS = []
 let ALL_COUNTRIES = []
-let PRESENTED_GROUP = []
+let PRESENTED_INDICATORS = []
+let PRESENTED_COUNTRIES = []
 let IDLE_TIMEOUT
 
 
@@ -80,7 +81,7 @@ function addLines(svg, x, y, myColor, newData) {
         .data(newData)
         .enter()
         .append("path")
-        .attr("class", function (d) { return d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_") + " " + d.name.substring(0, d.name.indexOf("/")) })
+        .attr("class", function (d) { return d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_") + " " + d.name.substring(0, d.name.indexOf("/")) + " lines" })
         .attr("d", function (d) { return line(d.values) })
         .attr("stroke", function (d) { return myColor(d.name) })
         .style("stroke-width", 4)
@@ -140,7 +141,7 @@ function addPoints(svg, x, y, myColor, newData) {
         })
         .enter()
         .append("circle")
-        .attr("class", function (d) { return d.class + " " + d.country })
+        .attr("class", function (d) { return d.class + " " + d.country + " points" })
         .attr("cx", function (d) { return x(d.time) })
         .attr("cy", function (d) { return y(d.value) })
         .attr("r", 5)
@@ -165,7 +166,43 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
         .attr("class", "country")
         .style("margin-left", "4px")
         .on("click", function (d) {
-            svg.selectAll("." + d).remove()
+            if (PRESENTED_COUNTRIES.includes(d)) {
+                PRESENTED_COUNTRIES = PRESENTED_COUNTRIES.filter(function (value, index, arr) { return value != d })
+                svg.selectAll("." + d).remove()
+            } else {
+                let indArr = []
+                d3.selectAll(".indicator").each(function (z) {
+                    if (d3.select("#" + z.name.replace(/\./g, "_")).property("checked")) {
+                        indArr.push(z.name)
+                    }
+                })
+                PRESENTED_COUNTRIES.push(d)
+
+                let values = []
+                for (let z in indArr) {
+                    values.push([])
+                }
+                for (let indIdx in indArr) {
+                    for (let year in originalData[indArr[indIdx]]) {
+                        for (let countryIdx in originalData[indArr[indIdx]][year]) {
+                            if (originalData[indArr[indIdx]][year][countryIdx].id == d) {
+                                values[indIdx].push({ time: parseInt(year), value: (originalData[indArr[indIdx]][year][countryIdx].value == null ? 0 : Math.log(originalData[indArr[indIdx]][year][countryIdx].value)) })
+                            }
+
+                        }
+
+                    }
+                }
+                let newData = []
+                for (let idx in values) {
+                    newData.push({ name: d + "/" + indArr[idx], values: values[idx] })
+                }
+
+                addPoints(svg, x, y, myColor, newData)
+                addLines(svg, x, y, myColor, newData)
+
+                d3.select("#" + d).property("checked", "true")
+            }
         })
 
     d3.select("#indicators").selectAll("myLegend")
@@ -175,10 +212,11 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
         .attr("class", "row")
         .append("label")
         .style("cursor", "pointer")
-        .text(function (d) { return d.name; })
+        .text(function (d) { return d.name.replace(/\./g, "_"); })
         .append("input")
         .attr("type", "checkbox")
-        .attr("id", function (d) { return d.name; })
+        .attr("id", function (d) { return d.name.replace(/\./g, "_"); })
+        .attr("class", "indicator")
         .style("margin-left", "4px")
         .on("click", function (d) {
             updateScatterPlot(svg, x, y, myColor, d, originalData)
@@ -186,8 +224,8 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
 }
 
 function updateScatterPlot(svg, x, y, myColor, d, data) {
-    if (PRESENTED_GROUP.includes(d.name)) {
-        PRESENTED_GROUP = PRESENTED_GROUP.filter(function (value, index, arr) { return value != d.name })
+    if (PRESENTED_INDICATORS.includes(d.name)) {
+        PRESENTED_INDICATORS = PRESENTED_INDICATORS.filter(function (value, index, arr) { return value != d.name })
         svg.selectAll("." + d.name.replace(/\./g, "_")).remove()
     } else {
         let countryArr = []
@@ -196,7 +234,7 @@ function updateScatterPlot(svg, x, y, myColor, d, data) {
                 countryArr.push(z)
             }
         })
-        PRESENTED_GROUP.push(d.name)
+        PRESENTED_INDICATORS.push(d.name)
 
         let values = []
         for (let z in countryArr) {
@@ -205,7 +243,6 @@ function updateScatterPlot(svg, x, y, myColor, d, data) {
         for (let year in data[d.name]) {
             for (let countryIdx in data[d.name][year]) {
                 if (countryArr.indexOf(data[d.name][year][countryIdx].id) != -1) {
-                    console.log(data[d.name][year][countryIdx].id)
                     values[countryArr.indexOf(data[d.name][year][countryIdx].id)].push({ time: parseInt(year), value: (data[d.name][year][countryIdx].value == null ? 0 : Math.log(data[d.name][year][countryIdx].value)) })
                 }
 
@@ -221,7 +258,7 @@ function updateScatterPlot(svg, x, y, myColor, d, data) {
         addPoints(svg, x, y, myColor, newData)
         addLines(svg, x, y, myColor, newData)
 
-        d3.select("#" + d.name).property("checked", "true")
+        d3.select("#" + d.name.replace(/\./g, "_")).property("checked", "true")
     }
 }
 
@@ -408,10 +445,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     polygonTemplate.tooltipText = "{name}:{value}";
     polygonTemplate.fill = "lightgrey" //chart.colors.getIndex(0);
 
-    polygonTemplate.events.on("hit", function (ev) {
-        d3.selectAll(".country").property("checked", false)
-        d3.select("#" + ev.target.dataItem.dataContext.id).property("checked", true)
-    });
+
 
     // Create hover state and set alternative fill color
     let hs = polygonTemplate.states.create("hover");
@@ -485,7 +519,17 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     //     valueATmp.push({ time: data[idx].time, value: data[idx].value })
     // }
 
-    // updateScatterPlot(svg, x, y, myColor, { name: "valueA", values: valueATmp }, data)
+    polygonTemplate.events.on("hit", function (ev) {
+        d3.selectAll(".country").property("checked", false)
+        d3.selectAll(".indicator").property("checked", false)
+        d3.selectAll(".points").remove()
+        d3.selectAll(".lines").remove()
+        PRESENTED_COUNTRIES = []
+        PRESENTED_INDICATORS = []
+        d3.select("#" + ev.target.dataItem.dataContext.id).property("checked", true)
+        updateScatterPlot(svg, x, y, myColor, { name: btnSelected }, data)
+        document.getElementById("developmentindicators").scrollIntoView({ block: 'end', behavior: 'smooth' })
+    });
 
 
     // Add brushing
