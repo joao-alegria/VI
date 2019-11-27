@@ -157,6 +157,7 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
         .enter()
         .append('div')
         .attr("class", "row")
+        .style("text-align", "right")
         .append("label")
         .style("cursor", "pointer")
         .text(function (d) { return d })
@@ -210,9 +211,37 @@ function addLegend(svg, x, y, myColor, updateScatterPlot, originalData, newData)
         .enter()
         .append('div')
         .attr("class", "row")
+        .style("text-align", "right")
         .append("label")
         .style("cursor", "pointer")
-        .text(function (d) { return d.name.replace(/\./g, "_"); })
+        //.text(function (d) { return d.name.replace(/\./g, "_"); })
+        .text(function (d) { 
+            switch(d.name) {
+                case "SH.TBS.INCD":
+                    return "Incidence of tuberculosis"
+                case "VC.IHR.PSRC.P5":
+                    return "Intentional homicides"
+                case "SH.STA.WASH.P5":
+                    return "Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene"
+                case "SH.STA.SUIC.P5":
+                    return "Suicide mortality rate"
+                case "SH.HIV.INCD.ZS":
+                    return "Incidence of HIV"
+                case "SH.MLR.INCD.P3":
+                    return "Incidence of malaria"
+                case "SH.DYN.NMRT":
+                    return "Mortality rate, neonatal"
+                case "SH.DYN.MORT":
+                    return "Mortality rate, under-5"
+                case "SP.DYN.IMRT.IN":
+                    return "Mortality rate, infant"
+                case "SH.MED.NUMW.P3":
+                    return "Number of nurses and midwives"
+                case "SP.DYN.AMRT.P3":
+                    return "Mortality rate, adult"
+            }
+            return d.name.replace(/\./g, "_"); 
+        })
         .append("input")
         .attr("type", "checkbox")
         .attr("id", function (d) { return d.name.replace(/\./g, "_"); })
