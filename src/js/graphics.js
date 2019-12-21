@@ -15,6 +15,9 @@ let presentedCountries = []
 
 let IDLE_TIMEOUT
 
+let REDUCEDDATASETURL = "https://joao-alegria.github.io/VI/dataset/reducedDataset.json"
+let WORLMAPDATAURL = "https://joao-alegria.github.io/VI/dataset/world_countries.json"
+
 /* MAP FUNCTIONS */
 
 // Retrieves the data from the dataset for the given indicator and year
@@ -77,13 +80,13 @@ function addLines(svg, x, y, myColor, newData) {
         .data(newData)
         .enter()
         .append("path")
-            .attr("class", function (d) { return d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_") + " " + d.name.substring(0, d.name.indexOf("/")) + " lines" })
-            .attr("d", function (d) { return line(d.values) })
-            .attr("stroke", function (d) { 
-                return myColor(d.name) 
-            })
-            .style("stroke-width", 3)
-            .style("fill", "none")      
+        .attr("class", function (d) { return d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_") + " " + d.name.substring(0, d.name.indexOf("/")) + " lines" })
+        .attr("d", function (d) { return line(d.values) })
+        .attr("stroke", function (d) {
+            return myColor(d.name)
+        })
+        .style("stroke-width", 3)
+        .style("fill", "none")
 }
 
 // Adds points to the chart from the selected indicators and countries (null values appear in grey)
@@ -91,13 +94,13 @@ function addPoints(svg, x, y, myColor, newData) {
     // create a tooltip
     let Tooltip = d3.select("#scatter-plot")
         .append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0)
-            .style("background-color", "white")
-            .style("border", "solid")
-            .style("border-width", "2px")
-            .style("border-radius", "5px")
-            .style("padding", "5px")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
 
     // Three function that change the tooltip when user hover / move / leave a cell
     let mouseover = function (d) {
@@ -108,7 +111,7 @@ function addPoints(svg, x, y, myColor, newData) {
         let cursorX = d3.mouse(this)[0]
         let cursorY = d3.mouse(this)[1]
         let label = ""
-        switch(d.class) {
+        switch (d.class) {
             case "H_SH_TBS_INCD":
                 label = "Incidence of tuberculosis"
             case "G_VC_IHR_PSRC_P5":
@@ -130,7 +133,7 @@ function addPoints(svg, x, y, myColor, newData) {
             case "K_SH_MED_NUMW_P3":
                 label = "Number of nurses and midwives"
             case "B_SP_DYN_AMRT_P3":
-                label = "Mortality rate, adult" 
+                label = "Mortality rate, adult"
         }
         Tooltip
             .html(d.country + "/" + label + ": " + d.value)
@@ -149,36 +152,36 @@ function addPoints(svg, x, y, myColor, newData) {
         .data(newData)
         .enter()
         .append('g')
-            .attr("class", function (d) { return d.name })
-            .selectAll("myPoints")
-                .data(function (d) {
-                    return d.values.map(function (a) {
-                        return {
-                            time: a.time,
-                            value: a.value,
-                            class: d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_"),
-                            country: d.name.substring(0, d.name.indexOf("/")),
-                            prev: d.name
-                        }
-                    })
-                })
+        .attr("class", function (d) { return d.name })
+        .selectAll("myPoints")
+        .data(function (d) {
+            return d.values.map(function (a) {
+                return {
+                    time: a.time,
+                    value: a.value,
+                    class: d.name.substring(d.name.indexOf("/") + 1, d.name.length).replace(/\./g, "_"),
+                    country: d.name.substring(0, d.name.indexOf("/")),
+                    prev: d.name
+                }
+            })
+        })
         .enter()
         .append("circle")
-            .attr("class", function (d) { return d.class + " " + d.country + " points" })
-            .attr("cx", function (d) { return x(d.time) })
-            .attr("cy", function (d) { return y(d.value) })
-            .attr("r",6)
-            .attr("stroke", "white")
-            .style("fill", function (d) { 
-                if (d.value == 0) {
-                    return am4core.color("grey")
-                }
-                return myColor(d.prev) 
-            })
-            .on("mouseover", mouseover)
-            .on("mousemove", mousemove)
-            .on("mouseleave", mouseleave)
-        
+        .attr("class", function (d) { return d.class + " " + d.country + " points" })
+        .attr("cx", function (d) { return x(d.time) })
+        .attr("cy", function (d) { return y(d.value) })
+        .attr("r", 6)
+        .attr("stroke", "white")
+        .style("fill", function (d) {
+            if (d.value == 0) {
+                return am4core.color("grey")
+            }
+            return myColor(d.prev)
+        })
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+
 }
 
 // Adds side filters for the plot (two columns with countries and available indicators)
@@ -188,101 +191,101 @@ function addFilters(svg, x, y, myColor, updateScatterPlot, originalData, newData
         .data(allCountries)
         .enter()
         .append('div')
-            .attr("class", "row")
-            .style("text-align", "right")
+        .attr("class", "row")
+        .style("text-align", "right")
         .append("label")
-            .style("cursor", "pointer")
-            .text(function (d) { return d })
+        .style("cursor", "pointer")
+        .text(function (d) { return d })
         .append("input")
-            .attr("type", "checkbox")
-            .attr("id", function (d) { return d })
-            .attr("class", "country")
-            .style("margin-left", "4px")
-            .on("click", function (d) {
-                if (presentedCountries.includes(d)) {
-                    presentedCountries = presentedCountries.filter(function (value, index, arr) { return value != d })
-                    svg.selectAll("." + d).remove()
-                } else {
-                    let indArr = []
-                    d3.selectAll(".indicator").each(function (z) {
-                        if (d3.select("#" + z.name.replace(/\./g, "_")).property("checked")) {
-                            indArr.push(z.name)
-                        }
-                    })
-                    presentedCountries.push(d)
-
-                    let values = []
-                    for (let z in indArr) {
-                        values.push([])
+        .attr("type", "checkbox")
+        .attr("id", function (d) { return d })
+        .attr("class", "country")
+        .style("margin-left", "4px")
+        .on("click", function (d) {
+            if (presentedCountries.includes(d)) {
+                presentedCountries = presentedCountries.filter(function (value, index, arr) { return value != d })
+                svg.selectAll("." + d).remove()
+            } else {
+                let indArr = []
+                d3.selectAll(".indicator").each(function (z) {
+                    if (d3.select("#" + z.name.replace(/\./g, "_")).property("checked")) {
+                        indArr.push(z.name)
                     }
-                    for (let indIdx in indArr) {
-                        for (let year in originalData[indArr[indIdx]]) {
-                            for (let countryIdx in originalData[indArr[indIdx]][year]) {
-                                if (originalData[indArr[indIdx]][year][countryIdx].id == d) {
-                                    values[indIdx].push({ time: parseInt(year), value: (originalData[indArr[indIdx]][year][countryIdx].value == null ? 0 : Math.log(originalData[indArr[indIdx]][year][countryIdx].value)) })
-                                }
+                })
+                presentedCountries.push(d)
 
+                let values = []
+                for (let z in indArr) {
+                    values.push([])
+                }
+                for (let indIdx in indArr) {
+                    for (let year in originalData[indArr[indIdx]]) {
+                        for (let countryIdx in originalData[indArr[indIdx]][year]) {
+                            if (originalData[indArr[indIdx]][year][countryIdx].id == d) {
+                                values[indIdx].push({ time: parseInt(year), value: (originalData[indArr[indIdx]][year][countryIdx].value == null ? 0 : Math.log(originalData[indArr[indIdx]][year][countryIdx].value)) })
                             }
 
                         }
-                    }
-                    let newData = []
-                    for (let idx in values) {
-                        newData.push({ name: d + "/" + indArr[idx], values: values[idx] })
-                    }
 
-                    addPoints(svg1, x, y, myColor, newData)
-                    addLines(svg, x, y, myColor, newData)
-
-                    d3.select("#" + d).property("checked", "true")
+                    }
                 }
-            })
+                let newData = []
+                for (let idx in values) {
+                    newData.push({ name: d + "/" + indArr[idx], values: values[idx] })
+                }
+
+                addPoints(svg1, x, y, myColor, newData)
+                addLines(svg, x, y, myColor, newData)
+
+                d3.select("#" + d).property("checked", "true")
+            }
+        })
 
     // indicators
     d3.select("#indicators").selectAll("myLegend")
         .data(newData)
         .enter()
         .append('div')
-            .attr("class", "row")
-            .style("text-align", "right")
+        .attr("class", "row")
+        .style("text-align", "right")
         .append("label")
-            .style("cursor", "pointer")
-            //.text(function (d) { return d.name.replace(/\./g, "_"); })
-            .text(function (d) { 
-                switch(d.name) {
-                    case "H.SH.TBS.INCD":
-                        return "Incidence of tuberculosis"
-                    case "G.VC.IHR.PSRC.P5":
-                        return "Intentional homicides"
-                    case "A.SH.STA.WASH.P5":
-                        return "Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene"
-                    case "F.SH.STA.SUIC.P5":
-                        return "Suicide mortality rate"
-                    case "I.SH.HIV.INCD.ZS":
-                        return "Incidence of HIV"
-                    case "J.SH.MLR.INCD.P3":
-                        return "Incidence of malaria"
-                    case "E.SH.DYN.NMRT":
-                        return "Mortality rate, neonatal"
-                    case "D.SH.DYN.MORT":
-                        return "Mortality rate, under-5"
-                    case "C.SP.DYN.IMRT.IN":
-                        return "Mortality rate, infant"
-                    case "K.SH.MED.NUMW.P3":
-                        return "Number of nurses and midwives"
-                    case "B.SP.DYN.AMRT.P3":
-                        return "Mortality rate, adult"
-                }
-                return d.name.replace(/\./g, "_"); 
-            })
+        .style("cursor", "pointer")
+        //.text(function (d) { return d.name.replace(/\./g, "_"); })
+        .text(function (d) {
+            switch (d.name) {
+                case "H.SH.TBS.INCD":
+                    return "Incidence of tuberculosis"
+                case "G.VC.IHR.PSRC.P5":
+                    return "Intentional homicides"
+                case "A.SH.STA.WASH.P5":
+                    return "Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene"
+                case "F.SH.STA.SUIC.P5":
+                    return "Suicide mortality rate"
+                case "I.SH.HIV.INCD.ZS":
+                    return "Incidence of HIV"
+                case "J.SH.MLR.INCD.P3":
+                    return "Incidence of malaria"
+                case "E.SH.DYN.NMRT":
+                    return "Mortality rate, neonatal"
+                case "D.SH.DYN.MORT":
+                    return "Mortality rate, under-5"
+                case "C.SP.DYN.IMRT.IN":
+                    return "Mortality rate, infant"
+                case "K.SH.MED.NUMW.P3":
+                    return "Number of nurses and midwives"
+                case "B.SP.DYN.AMRT.P3":
+                    return "Mortality rate, adult"
+            }
+            return d.name.replace(/\./g, "_");
+        })
         .append("input")
-            .attr("type", "checkbox")
-            .attr("id", function (d) { return d.name.replace(/\./g, "_"); })
-            .attr("class", "indicator")
-            .style("margin-left", "4px")
-            .on("click", function (d) {
-                updateScatterPlot(svg, x, y, myColor, d, originalData)
-            })
+        .attr("type", "checkbox")
+        .attr("id", function (d) { return d.name.replace(/\./g, "_"); })
+        .attr("class", "indicator")
+        .style("margin-left", "4px")
+        .on("click", function (d) {
+            updateScatterPlot(svg, x, y, myColor, d, originalData)
+        })
 }
 
 // Called everytime filters are changed by the user (or map is clicked) in order for the chart to be updated with the new data
@@ -337,15 +340,15 @@ let margin_left = 20;
 // Append the svg object to the body of the page
 let svg = d3.select("#scatter-plot")
     .append("svg")
-        .attr("id", "mySVG")
-        .attr("width", width + 100)
-        .attr("height", height + 50)
+    .attr("id", "mySVG")
+    .attr("width", width + 100)
+    .attr("height", height + 50)
     .append("g")
 
 let svg1 = svg.append("g")
 
 // Read the data
-d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
+d3.json(REDUCEDDATASETURL, function (error, datasetJSON) {
 
     // Check for errors when loading data
     if (error) { throw error; }
@@ -354,7 +357,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
 
     // order datasetJSON
     const orderedDatasetJSON = {};
-    Object.keys(datasetJSON).sort().forEach(function(key) {
+    Object.keys(datasetJSON).sort().forEach(function (key) {
         orderedDatasetJSON[key] = datasetJSON[key];
     });
 
@@ -413,7 +416,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
     // Set map definition
     // chart.geodata = am4geodata_worldLow;
 
-    chart.geodataSource.url = "../../dataset/world_countries.json";
+    chart.geodataSource.url = WORLMAPDATAURL;
     //chart.geodata = am4geodata_worldLow;
 
     // Pan behavior
@@ -583,7 +586,7 @@ d3.json("../../dataset/reducedDataset.json", function (error, datasetJSON) {
         .range([height, 0]);
     let yAxis = svg.append("g")
         .call(d3.axisLeft(y));
- 
+
     svg.append("text")
         .attr("text-anchor", "end")
         .attr("x", width)
