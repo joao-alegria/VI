@@ -1,0 +1,11 @@
+Perguntas a fazer aos participantes:
+
+1. Qual a diferença de mortalidade de recém nascidos no Brasil entre o ano 1975 e 2000 ?
+
+2. Em 1980, qual era o país africano com maior mortalidade neonatal?
+
+3. Que indicadores podem estar relacionados com a descida da mortalidade portuguesa ao longo do tempo?
+
+4. Entre Portugal e USA, qual o país com maior número de homicídios intencionais (em média no tempo)?
+
+5. Qual o país com maior mortalidade de adultos de todos os anos do dataset?
