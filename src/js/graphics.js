@@ -374,7 +374,6 @@ d3.json(REDUCEDDATASETURL, function (error, datasetJSON) {
 
     // Add fictitious countries to insert max and min values of current indicator 
     // (this is done for the color scaling to be correct throughout the years)
-    let MaxMin
     Object.keys(data).forEach(function (indicator) {
         tmp = getMaxMinValueByIndicator(data, indicator)
 
@@ -458,8 +457,6 @@ d3.json(REDUCEDDATASETURL, function (error, datasetJSON) {
         heatLegend.valueAxis.hideTooltip();
     });
 
-
-
     // Add grid
     let grid = chart.series.push(new am4maps.GraticuleSeries());
     grid.toBack();
@@ -487,6 +484,7 @@ d3.json(REDUCEDDATASETURL, function (error, datasetJSON) {
         polygonSeries.data = data[btnSelected][slider.value];
         currentYear.innerHTML = slider.value;
     }
+
     polygonSeries.data = data[btnSelected][slider.value];
     // polygonSeries.data = [{id:"US", value:1000}, {id:"RU", value:500}, {id:"AU", value:0}];
 
